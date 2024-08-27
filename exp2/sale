@@ -1,0 +1,46 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class SalesAnalysis {
+    public static void main(String[] args) {
+        List<SalesRecord> sales = new ArrayList<>();
+        sales.add(new SalesRecord("1", "Alice", "North", 300.0, "2023-01-01"));
+        sales.add(new SalesRecord("2", "Bob", "South", 150.0, "2023-01-02"));
+        sales.add(new SalesRecord("3", "Charlie", "North", 500.0, "2023-01-03"));
+
+        // Filter sales records for the North region
+        List<SalesRecord> northSales = sales.stream()
+                .filter(record -> "North".equals(record.getRegion()))
+                .collect(Collectors.toList());
+
+        // Print filtered records
+        northSales.forEach(System.out::println);
+
+        // Extract and print sales amounts
+        List<Double> salesAmounts = northSales.stream()
+                .map(SalesRecord::getAmount)
+                .collect(Collectors.toList());
+        salesAmounts.forEach(System.out::println);
+
+        // Calculate total sales
+        double totalSales = northSales.stream()
+                .mapToDouble(SalesRecord::getAmount)
+                .sum();
+        System.out.println("Total Sales: " + totalSales);
+
+        // Group by salesPerson and print
+        Map<String, List<SalesRecord>> salesByPerson = sales.stream()
+                .collect(Collectors.groupingBy(SalesRecord::getSalesPerson));
+        salesByPerson.forEach((person, records) -> {
+            System.out.println(person + ": " + records);
+        });
+
+        // Generate and print sales report
+        salesByPerson.forEach((person, records) -> {
+            double total = records.stream().mapToDouble(SalesRecord::getAmount).sum();
+            System.out.println(person + ": Total Sales = " + total);
+        });
+    }
+}
